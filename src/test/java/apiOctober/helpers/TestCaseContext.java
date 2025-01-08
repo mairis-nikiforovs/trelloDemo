@@ -5,6 +5,7 @@ import apiOctober.domain.Card;
 import apiOctober.domain.CheckList;
 import apiOctober.domain.CheckListItem;
 import apiOctober.domain.List;
+import io.restassured.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +21,7 @@ public class TestCaseContext {
   private static CheckList checklist;
   @Setter @Getter
   private static CheckListItem checklistItem;
+  @Setter @Getter
+  private static Response response;
 
 }

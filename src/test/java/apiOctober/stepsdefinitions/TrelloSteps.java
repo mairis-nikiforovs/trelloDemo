@@ -90,4 +90,25 @@ public class TrelloSteps {
     CheckListItem item = response.as(CheckListItem.class);
     TestCaseContext.setChecklistItem(item);
   }
+
+  @When("I try creating a card named {word} without specifying a list for it")
+  public void iTryCreatingACardWithoutSpecifyingAListForIt(String title) {
+    Response response = TrelloClient.createCardWithoutList(
+        TestCaseContext.getList().getId(),title
+    );
+    TestCaseContext.setResponse(response);
+  }
+
+  @Then("I see an error response returned")
+  public void iSeeAnErrorResponseReturned() {
+    Response response = TestCaseContext.getResponse();
+
+    Assertions.assertThat(response.statusCode())
+        .as("The status code of the response is 400")
+        .isEqualTo(400);
+
+    Assertions.assertThat(response.getBody().prettyPrint())
+        .as("The expected error message is displayed")
+        .contains("invalid value for idList");
+  }
 }

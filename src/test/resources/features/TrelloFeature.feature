@@ -15,7 +15,13 @@ Feature: Trello test set
     Then I add an item named "TO DO 1" to the checklist
     And I add an item named "TO DO 2" to the checklist
 
-  @Scenario3 @NoDelete
+  @Scenario3
+  Scenario: A card can't be created without specifying list ID
+    Given I add a list with title "My list " to the board
+    When I try creating a card named "test" without specifying a list for it
+    Then I see an error response returned
+
+  @Scenario4 @NoDelete
   Scenario: Create a list with 2 cards containing checklists
     Given I add a list with title "My list " to the board
     When I add a card with title "My card 1" to the list

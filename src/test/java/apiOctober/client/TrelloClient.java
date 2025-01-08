@@ -78,6 +78,16 @@ public class TrelloClient {
         .extract().response();
   }
 
+  public static Response createCardWithoutList(String idList, String name){
+    return RestAssured
+        .given(trelloSpec())
+        .queryParam("name", name)
+        .when()
+        .post("/cards")
+        .then().log().all()
+        .extract().response();
+  }
+
   public static Response createChecklist(String idCard, String name){
     return RestAssured
         .given(trelloSpec())
