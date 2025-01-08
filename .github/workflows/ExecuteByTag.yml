@@ -1,0 +1,58 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Execute By Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      TAGS:
+        description: 'Tags of the scenarios that need to be executed'
+        default: '@'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Executing regression tests
+    if: '!cancelled()'
+    runs-on: local
+    steps:
+      - name: Checkout
+        if: '!cancelled()'
+        uses: actions/checkout@v3
+      - name: Run the Maven test phase
+        run: mvn clean test -Dcucumber.filter.tags="${{ github.event.inputs.TAGS }}"
+  deploy:
+    name: Publishing test results
+    if: '!cancelled()'
+    needs: test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: local
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './target/generated-reports'
+          retention-days: "15"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
