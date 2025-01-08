@@ -71,6 +71,10 @@ public class TrelloSteps {
     Response response = TrelloClient.createCard(TestCaseContext.getList().getId(),title);
     Card card = response.as(Card.class);
     TestCaseContext.setCard(card);
+
+    Assertions.assertThat(response.getTime())
+        .as("Checking if the response was sent back in 5s")
+        .isLessThan(5000);
   }
 
   @And("I attach a checklist named {string} to the card")
