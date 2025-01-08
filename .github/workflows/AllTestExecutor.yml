@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  test:
     name: Executing regression tests
     if: '!cancelled()'
     runs-on: local
@@ -31,3 +31,22 @@ jobs:
         uses: actions/checkout@v3
       - name: Run the Maven test phase
         run: mvn clean test
+  deploy:
+    name: Publishing test results
+    if: '!cancelled()'
+    needs: test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: local
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './target/generated-reports'
+          retention-days: "15"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
